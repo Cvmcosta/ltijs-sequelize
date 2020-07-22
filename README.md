@@ -38,7 +38,23 @@ Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps
 ---
 ## Introduction
 
-This package allows [Ltijs](https://cvmcosta.github.io/ltijs) to work with the databases supported by [Sequelize](https://sequelize.org/master/). 
+This package allows [Ltijs](https://cvmcosta.github.io/ltijs) to work with the databases supported by [Sequelize](https://sequelize.org/master/).
+
+#### Tested with:
+
+| Database | Tested |
+| --------- | - |
+| MySQL | <center>✔️</center> |
+| PostgreSQL | <center>✔️</center> |
+| MariaDB | <center></center> |
+| SQLite | <center></center> |
+
+#### Ltijs Compatibility:
+
+| Ltijs version | Compatible |
+| --------- | - |
+| 5.0 | <center>✔️</center> |
+
 
 
 ---
