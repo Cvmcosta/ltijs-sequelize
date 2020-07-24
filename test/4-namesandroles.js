@@ -96,7 +96,7 @@ const signToken = (token, kid) => {
   return jwt.sign(token, key, { algorithm: 'RS256', keyid: kid })
 }
 
-const lti = require(process.env.LTIJS).Provider
+const lti = require('ltijs').Provider
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 

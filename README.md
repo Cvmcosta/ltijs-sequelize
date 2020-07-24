@@ -47,7 +47,6 @@ This package allows [Ltijs](https://cvmcosta.github.io/ltijs) to work with the d
 | MySQL | <center>✔️</center> |
 | PostgreSQL | <center>✔️</center> |
 | MariaDB | <center></center> |
-| SQLite | <center></center> |
 
 #### Ltijs Compatibility:
 
@@ -70,7 +69,14 @@ $ npm install ltijs-sequelize
 
 ## Usage
 
-> Setup the plugin just like you would [Sequelize](https://sequelize.org/master/manual/getting-started.html).
+> Setup the plugin just like you would a [Sequelize](https://sequelize.org/master/manual/getting-started.html) instance.
+
+- **database** - Database name.
+- **user** - Database user.
+- **pass** - Database password.
+- **options** - Options as defined in the [Sequelize constructor documentation](https://sequelize.org/master/class/lib/sequelize.js~Sequelize.html). **`host` and `dialect`** fields are required.
+  - **host** - Database host.
+  - **dialect** - One of `mysql`, `mariadb`, `postgres`, `mssql`.
 
 ```javascript
 const path = require('path')
@@ -79,13 +85,28 @@ const path = require('path')
 const lti = require('ltijs').Provider
 const Database = require('ltijs-sequelize')
 
-// Setup ltijs-sequelize
-const db = new Database('database', 'user', 'password', { host: 'localhost', dialect: 'mysql', logging: false })
+// Setup ltijs-sequelize using the same arguments as Sequelize's generic contructor
+const db = new Database('database', 'user', 'password', 
+  { 
+    host: 'localhost',
+    dialect: 'mysql',
+    logging: false 
+  })
 
 // Setup provider
 lti.setup('LTIKEY', // Key used to sign cookies and tokens
-         { plugin: db }, // Database configuration
-         { appRoute: '/', loginRoute: '/login' }) // Optionally, specify some of the reserved routes
+  { 
+    plugin: db // Passing db object to plugin field
+  },
+  { // Options
+    appRoute: '/', loginRoute: '/login', // Optionally, specify some of the reserved routes
+    cookies: {
+      secure: false, // Set secure to true if the testing platform is in a different domain and https is being used
+      sameSite: '' // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
+    },
+    devMode: false // Set DevMode to true if the testing platform is in a different domain and https is not being used
+  }
+)
 
 // Set lti launch callback
 lti.onConnect((token, req, res) => {
@@ -98,7 +119,7 @@ const setup = async () => {
   await lti.deploy({ port: 3000 }) // Specifying port. Defaults to 3000
 
   // Register platform
-  await lti.registerPlatform({ 
+  await lti.registerPlatform({
     url: 'https://platform.url',
     name: 'Platform Name',
     clientId: 'TOOLCLIENTID',
@@ -142,8 +163,8 @@ And if you feel like it, you can donate any amount through paypal, it helps a lo
 ## Special thanks
 
 <div align="center">
-	<a href="https://portais.ufma.br/PortalUfma/" target='_blank'><img width="150" src="ufma-logo.png"></img></a>
-  <a href="https://www.unasus.ufma.br/" target='_blank'><img width="350" src="unasus-logo.png"></img></a>
+	<a href="https://portais.ufma.br/PortalUfma/" target='_blank'><img width="150" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/ufma-logo.png"></img></a>
+  <a href="https://www.unasus.ufma.br/" target='_blank'><img width="350" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/unasus-logo.png"></img></a>
 </div>
 
 > I would like to thank the Federal University of Maranhão and UNA-SUS/UFMA for the support throughout the entire development process.
@@ -153,7 +174,7 @@ And if you feel like it, you can donate any amount through paypal, it helps a lo
 
 <div align="center">
 <br>
-	<a href="https://coursekey.com/" target='_blank'><img width="180" src="coursekey-logo.png"></img></a>
+	<a href="https://coursekey.com/" target='_blank'><img width="180" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/coursekey-logo.png"></img></a>
 </div>
 
 > I would like to thank CourseKey for making the Certification process possible and allowing me to be an IMS Member through them, which will contribute immensely to the future of the project.

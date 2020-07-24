@@ -10,11 +10,11 @@ chai.use(chaiHttp)
 const expect = chai.expect
 const path = require('path')
 
-const lti = require(process.env.LTIJS).Provider
+const lti = require('ltijs').Provider
 
 const Database = require('../dist/DB')
 
-const Platform = require('../../../../ltijs/dist/Utils/Platform')
+const Platform = require('../node_modules/ltijs/dist/Utils/Platform')
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
@@ -94,9 +94,6 @@ describe('Testing Provider', function () {
   it('Provider.keysetRoute expected to return registered route', () => {
     expect(lti.keysetRoute()).to.be.a('string').equal(keysetRoute)
   })
-  it('Provider.whitelist expected to return true', () => {
-    expect(lti.whitelist('/whitelist1', { route: '/whitelist2', method: 'POST' })).to.be.equal(true)
-  })
   it('Provider.deploy expected to resolve true', async () => {
     await expect(lti.deploy({ silent: true, port: 3001 })).to.eventually.become(true)
   })
@@ -157,7 +154,7 @@ describe('Testing Provider', function () {
   })
   it('Provider.getAllPlatforms expected to resolve Array containing registered platforms', async () => {
     const plats = await lti.getAllPlatforms()
-    await expect(plats[0].platformUrl()).to.eventually.become('http://localhost/moodle')
+    await expect(plats.length).to.eql(2)
   })
   it('Provider.deletePlatform expected to return true and delete the platform', async () => {
     await lti.registerPlatform({
