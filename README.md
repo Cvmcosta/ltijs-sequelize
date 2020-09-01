@@ -1,7 +1,7 @@
 <div align="center">
 	<br>
 	<br>
-	<a href="https://cvmcosta.github.io/ltijs"><img width="360" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/987de79b9a3d529b1b507baa7b7a95d32ab386c2/docs/logo-300.svg?sanitize=true"></img></a>
+	<a href="https://cvmcosta.github.io/ltijs"><img width="360" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/logo-300.svg"></img></a>
   <a href="https://site.imsglobal.org/certifications/coursekey/ltijs"​ target='_blank'><img width="80" src="https://www.imsglobal.org/sites/default/files/IMSconformancelogoREG.png" alt="IMS Global Certified" border="0"></img></a>
 </div>
 
@@ -12,8 +12,7 @@
 [![travisci](https://travis-ci.org/Cvmcosta/ltijs.svg?branch=master)](https://travis-ci.org/Cvmcosta/ltijs)
 [![codecov](https://codecov.io/gh/Cvmcosta/ltijs/branch/master/graph/badge.svg)](https://codecov.io/gh/Cvmcosta/ltijs)
 [![Node Version](https://img.shields.io/node/v/ltijs.svg)](https://www.npmjs.com/package/ltijs)
-[![NPM package](https://img.shields.io/npm/v/ltijs.svg)](https://www.npmjs.com/package/ltijs)
-[![NPM downloads](https://img.shields.io/npm/dm/ltijs)](https://www.npmjs.com/package/ltijs)
+[![NPM package](https://img.shields.io/npm/v/ltijs-sequelize.svg)](https://www.npmjs.com/package/ltijs-sequelize)
 [![dependencies Status](https://david-dm.org/cvmcosta/ltijs/status.svg)](https://david-dm.org/cvmcosta/ltijs)
 [![devDependencies Status](https://david-dm.org/cvmcosta/ltijs/dev-status.svg)](https://david-dm.org/cvmcosta/ltijs?type=dev)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
@@ -23,7 +22,14 @@
 
 Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps!
 
-> [Ltijs is LTI Advantage Complete Certified by IMS](https://site.imsglobal.org/certifications/coursekey/ltijs)
+> [Ltijs is LTI® Advantage Complete Certified by IMS](https://site.imsglobal.org/certifications/coursekey/ltijs)
+
+> *Learning Tools Interoperability® (LTI®) is a trademark of the IMS Global Learning Consortium, Inc. (https://www.imsglobal.org)*
+
+> V2.0.0
+> **BREAKING CHANGES**
+> - Some fields were moved from the `idtoken` to the `contexttoken`, The `roles`, `endpoint`, `lis` and `namesRoles` fields change with the launch context, and cannot be treated as static values. They can now be found inside the `token.platformContext` field along with all the other context specific information.
+> - **It is recommended to delete the idtoken and contextoken tables when updating to version 2.0, the schema changes can cause errors on relational databases. These tables are repopulated on every launch, so no relevant information will be lost.**
 
 
 ## Table of Contents
@@ -50,9 +56,11 @@ This package allows [Ltijs](https://cvmcosta.github.io/ltijs) to work with the d
 
 #### Ltijs Compatibility:
 
-| Ltijs version | Compatible |
-| --------- | - |
-| 5.0 | <center>✔️</center> |
+
+| Ltijs-sequelize version | Ltijs version |
+| --------- | --------- |
+| 2.0 | 5.2 |
+| 1.0 | 5.0 |
 
 
 

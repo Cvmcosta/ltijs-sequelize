@@ -138,6 +138,23 @@ class Database {
         user: {
           type: Sequelize.TEXT
         },
+        userInfo: {
+          type: Sequelize.JSON
+        },
+        platformInfo: {
+          type: Sequelize.JSON
+        }
+      }),
+      contexttoken: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('contexttoken', {
+        contextId: {
+          type: Sequelize.TEXT
+        },
+        path: {
+          type: Sequelize.TEXT
+        },
+        user: {
+          type: Sequelize.TEXT
+        },
         roles: (0, _classPrivateFieldGet2.default)(this, _dialect) === 'postgres' ? {
           type: Sequelize.ARRAY(Sequelize.TEXT)
         } : {
@@ -156,32 +173,6 @@ class Database {
           }
 
         },
-        userInfo: {
-          type: Sequelize.JSON
-        },
-        platformInfo: {
-          type: Sequelize.JSON
-        },
-        endpoint: {
-          type: Sequelize.JSON
-        },
-        namesRoles: {
-          type: Sequelize.JSON
-        },
-        lis: {
-          type: Sequelize.JSON
-        }
-      }),
-      contexttoken: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('contexttoken', {
-        contextId: {
-          type: Sequelize.TEXT
-        },
-        path: {
-          type: Sequelize.TEXT
-        },
-        user: {
-          type: Sequelize.TEXT
-        },
         targetLinkUri: {
           type: Sequelize.TEXT
         },
@@ -192,6 +183,15 @@ class Database {
           type: Sequelize.JSON
         },
         custom: {
+          type: Sequelize.JSON
+        },
+        endpoint: {
+          type: Sequelize.JSON
+        },
+        namesRoles: {
+          type: Sequelize.JSON
+        },
+        lis: {
           type: Sequelize.JSON
         },
         launchPresentation: {

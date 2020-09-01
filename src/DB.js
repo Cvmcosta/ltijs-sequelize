@@ -64,31 +64,10 @@ class Database {
         user: {
           type: Sequelize.TEXT
         },
-        roles: this.#dialect === 'postgres' ? { type: Sequelize.ARRAY(Sequelize.TEXT) } : {
-          type: Sequelize.TEXT,
-          get() { // eslint-disable-line
-            const roles = this.getDataValue('roles')
-            if (roles) return roles.split(';')
-            return null
-          },
-          set(val) { // eslint-disable-line
-            if (val) this.setDataValue('roles', val.join(';'))
-            else this.setDataValue('roles', null)
-          }
-        },
         userInfo: {
           type: Sequelize.JSON
         },
         platformInfo: {
-          type: Sequelize.JSON
-        },
-        endpoint: {
-          type: Sequelize.JSON
-        },
-        namesRoles: {
-          type: Sequelize.JSON
-        },
-        lis: {
           type: Sequelize.JSON
         }
       }),
@@ -102,6 +81,18 @@ class Database {
         user: {
           type: Sequelize.TEXT
         },
+        roles: this.#dialect === 'postgres' ? { type: Sequelize.ARRAY(Sequelize.TEXT) } : {
+          type: Sequelize.TEXT,
+          get() { // eslint-disable-line
+            const roles = this.getDataValue('roles')
+            if (roles) return roles.split(';')
+            return null
+          },
+          set(val) { // eslint-disable-line
+            if (val) this.setDataValue('roles', val.join(';'))
+            else this.setDataValue('roles', null)
+          }
+        },
         targetLinkUri: {
           type: Sequelize.TEXT
         },
@@ -112,6 +103,15 @@ class Database {
           type: Sequelize.JSON
         },
         custom: {
+          type: Sequelize.JSON
+        },
+        endpoint: {
+          type: Sequelize.JSON
+        },
+        namesRoles: {
+          type: Sequelize.JSON
+        },
+        lis: {
           type: Sequelize.JSON
         },
         launchPresentation: {
