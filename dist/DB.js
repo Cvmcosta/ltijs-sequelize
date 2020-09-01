@@ -129,6 +129,9 @@ class Database {
         iss: {
           type: Sequelize.TEXT
         },
+        platformId: {
+          type: Sequelize.TEXT
+        },
         clientId: {
           type: Sequelize.TEXT
         },

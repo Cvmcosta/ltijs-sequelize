@@ -1,6 +1,6 @@
 {
   "name": "ltijs-sequelize",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Ltijs Sequelize Database Plugin",
   "main": "index.js",
   "engineStrict": true,
@@ -55,7 +55,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
     "eslint": "^7.5.0",
-    "ltijs": "^5.2.0",
+    "ltijs": "^5.2.1",
     "mocha": "^8.1.1",
     "nock": "^13.0.2",
     "sequelize-cli": "^6.2.0",
