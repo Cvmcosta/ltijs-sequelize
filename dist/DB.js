@@ -78,7 +78,8 @@ class Database {
         idtoken: 3600 * 24 * 1000,
         contexttoken: 3600 * 24 * 1000,
         accesstoken: 3600 * 1000,
-        nonce: 10 * 1000
+        nonce: 10 * 1000,
+        state: 600 * 1000
       }
     });
 
@@ -119,6 +120,14 @@ class Database {
           }
         });
         provDatabaseDebug('Expired nonce: ' + res);
+        res = await (0, _classPrivateFieldGet2.default)(this, _Models).state.destroy({
+          where: {
+            createdAt: {
+              [Sequelize.Op.lte]: Date.now() - (0, _classPrivateFieldGet2.default)(this, _ExpireTime).state
+            }
+          }
+        });
+        provDatabaseDebug('Expired state: ' + res);
       }
     });
 
@@ -147,6 +156,13 @@ class Database {
         platformInfo: {
           type: Sequelize.JSON
         }
+      }, {
+        indexes: [{
+          fields: ['iss', 'clientId', 'deploymentId', 'user'],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
       }),
       contexttoken: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('contexttoken', {
         contextId: {
@@ -209,6 +225,13 @@ class Database {
         deepLinkingSettings: {
           type: Sequelize.JSON
         }
+      }, {
+        indexes: [{
+          fields: ['contextId', 'user'],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
       }),
       platform: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('platform', {
         platformName: {
@@ -232,6 +255,17 @@ class Database {
         authConfig: {
           type: Sequelize.JSON
         }
+      }, {
+        indexes: [{
+          fields: ['platformUrl', 'clientId'],
+          unique: true
+        }, {
+          fields: ['platformUrl'],
+          unique: true
+        }, {
+          fields: ['kid'],
+          unique: true
+        }]
       }),
       publickey: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('publickey', {
         kid: {
@@ -250,6 +284,11 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
+      }, {
+        indexes: [{
+          fields: ['kid'],
+          unique: true
+        }]
       }),
       privatekey: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('privatekey', {
         kid: {
@@ -268,6 +307,11 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
+      }, {
+        indexes: [{
+          fields: ['kid'],
+          unique: true
+        }]
       }),
       accesstoken: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('accesstoken', {
         platformUrl: {
@@ -285,12 +329,42 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
+      }, {
+        indexes: [{
+          fields: ['platformUrl', 'clientId', 'scopes'],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
       }),
       nonce: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('nonce', {
         nonce: {
           type: Sequelize.STRING,
           primaryKey: true
         }
+      }, {
+        indexes: [{
+          fields: ['nonce'],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
+      }),
+      state: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('state', {
+        state: {
+          type: Sequelize.STRING,
+          primaryKey: true
+        },
+        query: {
+          type: Sequelize.JSON
+        }
+      }, {
+        indexes: [{
+          fields: ['state'],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
       })
     });
   }

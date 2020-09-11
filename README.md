@@ -26,6 +26,10 @@ Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps
 
 > *Learning Tools Interoperability® (LTI®) is a trademark of the IMS Global Learning Consortium, Inc. (https://www.imsglobal.org)*
 
+
+> V2.2.0
+> - Added 'state' table to reflect changes made to the latest version of ltijs (5.3.0).
+> - Added indexes to improve performance.
 > V2.1.0
 > **BREAKING CHANGES**
 > - Some fields were moved from the `idtoken` to the `contexttoken`, The `roles`, `endpoint`, `lis` and `namesRoles` fields change with the launch context, and cannot be treated as static values. They can now be found inside the `contexttoken` object along with all the other context specific information.
@@ -59,7 +63,8 @@ This package allows [Ltijs](https://cvmcosta.github.io/ltijs) to work with the d
 
 | Ltijs-sequelize version | Ltijs version |
 | --------- | --------- |
-| 2.1.0 | ^5.2.0 |
+| 2.2.0 | ^5.3.0 |
+| 2.1.0 | 5.2.1 |
 | 1.0.0 | 5.1.0 |
 
 

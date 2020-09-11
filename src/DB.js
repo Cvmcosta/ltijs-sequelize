@@ -21,7 +21,8 @@ class Database {
     idtoken: 3600 * 24 * 1000,
     contexttoken: 3600 * 24 * 1000,
     accesstoken: 3600 * 1000,
-    nonce: 10 * 1000
+    nonce: 10 * 1000,
+    state: 600 * 1000
   }
 
   #databaseCleanup = async () => {
@@ -38,6 +39,9 @@ class Database {
 
     res = await this.#Models.nonce.destroy({ where: { createdAt: { [Sequelize.Op.lte]: Date.now() - (this.#ExpireTime.nonce) } } })
     provDatabaseDebug('Expired nonce: ' + res)
+
+    res = await this.#Models.state.destroy({ where: { createdAt: { [Sequelize.Op.lte]: Date.now() - (this.#ExpireTime.state) } } })
+    provDatabaseDebug('Expired state: ' + res)
   }
 
   /**
@@ -73,7 +77,7 @@ class Database {
         platformInfo: {
           type: Sequelize.JSON
         }
-      }),
+      }, { indexes: [{ fields: ['iss', 'clientId', 'deploymentId', 'user'], unique: true }, { fields: ['createdAt'] }] }),
       contexttoken: this.#sequelize.define('contexttoken', {
         contextId: {
           type: Sequelize.TEXT
@@ -129,7 +133,7 @@ class Database {
         deepLinkingSettings: {
           type: Sequelize.JSON
         }
-      }),
+      }, { indexes: [{ fields: ['contextId', 'user'], unique: true }, { fields: ['createdAt'] }] }),
       platform: this.#sequelize.define('platform', {
         platformName: {
           type: Sequelize.TEXT
@@ -152,7 +156,7 @@ class Database {
         authConfig: {
           type: Sequelize.JSON
         }
-      }),
+      }, { indexes: [{ fields: ['platformUrl', 'clientId'], unique: true }, { fields: ['platformUrl'], unique: true }, { fields: ['kid'], unique: true }] }),
       publickey: this.#sequelize.define('publickey', {
         kid: {
           type: Sequelize.STRING,
@@ -170,7 +174,7 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
-      }),
+      }, { indexes: [{ fields: ['kid'], unique: true }] }),
       privatekey: this.#sequelize.define('privatekey', {
         kid: {
           type: Sequelize.STRING,
@@ -188,7 +192,7 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
-      }),
+      }, { indexes: [{ fields: ['kid'], unique: true }] }),
       accesstoken: this.#sequelize.define('accesstoken', {
         platformUrl: {
           type: Sequelize.TEXT
@@ -205,13 +209,22 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
-      }),
+      }, { indexes: [{ fields: ['platformUrl', 'clientId', 'scopes'], unique: true }, { fields: ['createdAt'] }] }),
       nonce: this.#sequelize.define('nonce', {
         nonce: {
           type: Sequelize.STRING,
           primaryKey: true
         }
-      })
+      }, { indexes: [{ fields: ['nonce'], unique: true }, { fields: ['createdAt'] }] }),
+      state: this.#sequelize.define('state', {
+        state: {
+          type: Sequelize.STRING,
+          primaryKey: true
+        },
+        query: {
+          type: Sequelize.JSON
+        }
+      }, { indexes: [{ fields: ['state'], unique: true }, { fields: ['createdAt'] }] })
     }
   }
 
