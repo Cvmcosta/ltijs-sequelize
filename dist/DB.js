@@ -158,8 +158,7 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['iss', 'clientId', 'deploymentId', 'user'],
-          unique: true
+          fields: ['iss', 'clientId', 'deploymentId', 'user']
         }, {
           fields: ['createdAt']
         }]
@@ -227,8 +226,7 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['contextId', 'user'],
-          unique: true
+          fields: ['contextId', 'user']
         }, {
           fields: ['createdAt']
         }]
@@ -260,8 +258,7 @@ class Database {
           fields: ['platformUrl', 'clientId'],
           unique: true
         }, {
-          fields: ['platformUrl'],
-          unique: true
+          fields: ['platformUrl']
         }, {
           fields: ['kid'],
           unique: true
