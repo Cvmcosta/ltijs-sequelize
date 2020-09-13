@@ -104,7 +104,7 @@ describe('Testing LTI 1.3 flow', function () {
   it('Login route with unregistered platform is expected to return 401 error', async () => {
     const url = lti.loginRoute()
     return chai.request(lti.app).post(url).send({ iss: 'https://unregisteredPlatform.com' }).then(res => {
-      expect(res).to.have.status(401)
+      expect(res).to.have.status(400)
     })
   })
 
