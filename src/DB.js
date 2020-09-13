@@ -77,7 +77,7 @@ class Database {
         platformInfo: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['iss', 'clientId', 'deploymentId', 'user'], unique: true }, { fields: ['createdAt'] }] }),
+      }, { indexes: [{ fields: ['iss', 'clientId', 'deploymentId', 'user'] }, { fields: ['createdAt'] }] }),
       contexttoken: this.#sequelize.define('contexttoken', {
         contextId: {
           type: Sequelize.TEXT
@@ -133,7 +133,7 @@ class Database {
         deepLinkingSettings: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['contextId', 'user'], unique: true }, { fields: ['createdAt'] }] }),
+      }, { indexes: [{ fields: ['contextId', 'user'] }, { fields: ['createdAt'] }] }),
       platform: this.#sequelize.define('platform', {
         platformName: {
           type: Sequelize.TEXT
@@ -156,7 +156,7 @@ class Database {
         authConfig: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['platformUrl', 'clientId'], unique: true }, { fields: ['platformUrl'], unique: true }, { fields: ['kid'], unique: true }] }),
+      }, { indexes: [{ fields: ['platformUrl', 'clientId'], unique: true }, { fields: ['platformUrl'] }, { fields: ['kid'], unique: true }] }),
       publickey: this.#sequelize.define('publickey', {
         kid: {
           type: Sequelize.STRING,
