@@ -252,9 +252,13 @@ class Database {
   // Closes connection to the database
   async Close () {
     // Stopping cronjobs and connection to postgresql
-    this.#cronJob.stop()
-    this.#cronJob.destroy()
-    this.#cronJob = null
+    if (this.#cronJob) {
+      provDatabaseDebug('Stopping and removing cronjob')
+      this.#cronJob.stop()
+      this.#cronJob.destroy()
+      this.#cronJob = null
+    }
+    provDatabaseDebug('Closing connection to database')
     await this.#sequelize.close()
     this.#deploy = false
     provDatabaseDebug('Closed database connection and removed cronjob')

@@ -1,6 +1,6 @@
 {
   "name": "ltijs-sequelize",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Ltijs Sequelize Database Plugin",
   "main": "index.js",
   "engineStrict": true,

@@ -389,9 +389,14 @@ class Database {
 
   async Close() {
     // Stopping cronjobs and connection to postgresql
-    (0, _classPrivateFieldGet2.default)(this, _cronJob).stop();
-    (0, _classPrivateFieldGet2.default)(this, _cronJob).destroy();
-    (0, _classPrivateFieldSet2.default)(this, _cronJob, null);
+    if ((0, _classPrivateFieldGet2.default)(this, _cronJob)) {
+      provDatabaseDebug('Stopping and removing cronjob');
+      (0, _classPrivateFieldGet2.default)(this, _cronJob).stop();
+      (0, _classPrivateFieldGet2.default)(this, _cronJob).destroy();
+      (0, _classPrivateFieldSet2.default)(this, _cronJob, null);
+    }
+
+    provDatabaseDebug('Closing connection to database');
     await (0, _classPrivateFieldGet2.default)(this, _sequelize).close();
     (0, _classPrivateFieldSet2.default)(this, _deploy, false);
     provDatabaseDebug('Closed database connection and removed cronjob');
