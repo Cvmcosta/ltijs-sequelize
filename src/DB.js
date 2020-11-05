@@ -226,6 +226,8 @@ class Database {
         }
       }, { indexes: [{ fields: ['state'], unique: true }, { fields: ['createdAt'] }] })
     }
+
+    this.db = this.#sequelize
   }
 
   /**

@@ -364,6 +364,7 @@ class Database {
         }]
       })
     });
+    this.db = (0, _classPrivateFieldGet2.default)(this, _sequelize);
   }
   /**
    * @description Opens connection to database
