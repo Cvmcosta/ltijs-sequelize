@@ -264,6 +264,21 @@ class Database {
           unique: true
         }]
       }),
+      platformStatus: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('platformStatus', {
+        id: {
+          type: Sequelize.STRING,
+          primaryKey: true
+        },
+        active: {
+          type: Sequelize.BOOLEAN,
+          defaultValue: false
+        }
+      }, {
+        indexes: [{
+          fields: ['id'],
+          unique: true
+        }]
+      }),
       publickey: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('publickey', {
         kid: {
           type: Sequelize.STRING,

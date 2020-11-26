@@ -157,6 +157,16 @@ class Database {
           type: Sequelize.JSON
         }
       }, { indexes: [{ fields: ['platformUrl', 'clientId'], unique: true }, { fields: ['platformUrl'] }, { fields: ['kid'], unique: true }] }),
+      platformStatus: this.#sequelize.define('platformStatus', {
+        id: {
+          type: Sequelize.STRING,
+          primaryKey: true
+        },
+        active: {
+          type: Sequelize.BOOLEAN,
+          defaultValue: false
+        }
+      }, { indexes: [{ fields: ['id'], unique: true }] }),
       publickey: this.#sequelize.define('publickey', {
         kid: {
           type: Sequelize.STRING,
