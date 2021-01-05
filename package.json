@@ -41,7 +41,7 @@
     "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.3",
-    "tedious": "^8.3.0"
+    "tedious": "^9.2.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
