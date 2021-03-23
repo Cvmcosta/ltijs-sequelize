@@ -158,7 +158,19 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['iss', 'clientId', 'deploymentId', 'user']
+          fields: [{
+            attribute: 'iss',
+            length: 50
+          }, {
+            attribute: 'clientId',
+            length: 50
+          }, {
+            attribute: 'deploymentId',
+            length: 50
+          }, {
+            attribute: 'user',
+            length: 50
+          }]
         }, {
           fields: ['createdAt']
         }]
@@ -226,7 +238,13 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['contextId', 'user']
+          fields: [{
+            attribute: 'contextId',
+            length: 50
+          }, {
+            attribute: 'user',
+            length: 50
+          }]
         }, {
           fields: ['createdAt']
         }]
@@ -255,12 +273,24 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['platformUrl', 'clientId'],
+          fields: [{
+            attribute: 'platformUrl',
+            length: 50
+          }, {
+            attribute: 'clientId',
+            length: 50
+          }],
           unique: true
         }, {
-          fields: ['platformUrl']
+          fields: [{
+            attribute: 'platformUrl',
+            length: 50
+          }]
         }, {
-          fields: ['kid'],
+          fields: [{
+            attribute: 'kid',
+            length: 50
+          }],
           unique: true
         }]
       }),
@@ -298,7 +328,10 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['kid'],
+          fields: [{
+            attribute: 'kid',
+            length: 50
+          }],
           unique: true
         }]
       }),
@@ -321,7 +354,10 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['kid'],
+          fields: [{
+            attribute: 'kid',
+            length: 50
+          }],
           unique: true
         }]
       }),
@@ -343,7 +379,16 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['platformUrl', 'clientId', 'scopes'],
+          fields: [{
+            attribute: 'platformUrl',
+            length: 50
+          }, {
+            attribute: 'clientId',
+            length: 50
+          }, {
+            attribute: 'scopes',
+            length: 50
+          }],
           unique: true
         }, {
           fields: ['createdAt']
@@ -356,7 +401,10 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['nonce'],
+          fields: [{
+            attribute: 'nonce',
+            length: 50
+          }],
           unique: true
         }, {
           fields: ['createdAt']
@@ -372,7 +420,10 @@ class Database {
         }
       }, {
         indexes: [{
-          fields: ['state'],
+          fields: [{
+            attribute: 'state',
+            length: 50
+          }],
           unique: true
         }, {
           fields: ['createdAt']
