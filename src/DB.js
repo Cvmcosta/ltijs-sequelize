@@ -77,7 +77,25 @@ class Database {
         platformInfo: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['iss', 'clientId', 'deploymentId', 'user'] }, { fields: ['createdAt'] }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'iss',
+            length: 50
+          }, {
+            attribute: 'clientId',
+            length: 50
+          }, {
+            attribute: 'deploymentId',
+            length: 50
+          }, {
+            attribute: 'user',
+            length: 50
+          }]
+        }, {
+          fields: ['createdAt']
+        }]
+      }),
       contexttoken: this.#sequelize.define('contexttoken', {
         contextId: {
           type: Sequelize.TEXT
@@ -133,7 +151,19 @@ class Database {
         deepLinkingSettings: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['contextId', 'user'] }, { fields: ['createdAt'] }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'contextId',
+            length: 50
+          }, {
+            attribute: 'user',
+            length: 50
+          }]
+        }, {
+          fields: ['createdAt']
+        }]
+      }),
       platform: this.#sequelize.define('platform', {
         platformName: {
           type: Sequelize.TEXT
@@ -156,7 +186,29 @@ class Database {
         authConfig: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['platformUrl', 'clientId'], unique: true }, { fields: ['platformUrl'] }, { fields: ['kid'], unique: true }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'platformUrl',
+            length: 50
+          }, {
+            attribute: 'clientId',
+            length: 50
+          }],
+          unique: true
+        }, {
+          fields: [{
+            attribute: 'platformUrl',
+            length: 50
+          }]
+        }, {
+          fields: [{
+            attribute: 'kid',
+            length: 50
+          }],
+          unique: true
+        }]
+      }),
       platformStatus: this.#sequelize.define('platformStatus', {
         id: {
           type: Sequelize.STRING,
@@ -166,7 +218,12 @@ class Database {
           type: Sequelize.BOOLEAN,
           defaultValue: false
         }
-      }, { indexes: [{ fields: ['id'], unique: true }] }),
+      }, {
+        indexes: [{
+          fields: ['id'],
+          unique: true
+        }]
+      }),
       publickey: this.#sequelize.define('publickey', {
         kid: {
           type: Sequelize.STRING,
@@ -184,7 +241,15 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
-      }, { indexes: [{ fields: ['kid'], unique: true }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'kid',
+            length: 50
+          }],
+          unique: true
+        }]
+      }),
       privatekey: this.#sequelize.define('privatekey', {
         kid: {
           type: Sequelize.STRING,
@@ -202,7 +267,15 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
-      }, { indexes: [{ fields: ['kid'], unique: true }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'kid',
+            length: 50
+          }],
+          unique: true
+        }]
+      }),
       accesstoken: this.#sequelize.define('accesstoken', {
         platformUrl: {
           type: Sequelize.TEXT
@@ -219,13 +292,39 @@ class Database {
         data: {
           type: Sequelize.TEXT
         }
-      }, { indexes: [{ fields: ['platformUrl', 'clientId', 'scopes'], unique: true }, { fields: ['createdAt'] }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'platformUrl',
+            length: 50
+          }, {
+            attribute: 'clientId',
+            length: 50
+          }, {
+            attribute: 'scopes',
+            length: 50
+          }],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
+      }),
       nonce: this.#sequelize.define('nonce', {
         nonce: {
           type: Sequelize.STRING,
           primaryKey: true
         }
-      }, { indexes: [{ fields: ['nonce'], unique: true }, { fields: ['createdAt'] }] }),
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'nonce',
+            length: 50
+          }],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
+      }),
       state: this.#sequelize.define('state', {
         state: {
           type: Sequelize.STRING,
@@ -234,7 +333,17 @@ class Database {
         query: {
           type: Sequelize.JSON
         }
-      }, { indexes: [{ fields: ['state'], unique: true }, { fields: ['createdAt'] }] })
+      }, {
+        indexes: [{
+          fields: [{
+            attribute: 'state',
+            length: 50
+          }],
+          unique: true
+        }, {
+          fields: ['createdAt']
+        }]
+      })
     }
 
     this.db = this.#sequelize
