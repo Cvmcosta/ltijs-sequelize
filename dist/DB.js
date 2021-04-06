@@ -274,7 +274,8 @@ class Database {
         },
         authorizationServer: {
           type: Sequelize.STRING,
-          allowNull: true
+          allowNull: true,
+          defaultValue: null
         },
         kid: {
           type: Sequelize.TEXT

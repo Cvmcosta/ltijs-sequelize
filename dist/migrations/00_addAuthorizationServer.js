@@ -8,7 +8,7 @@ const up = async ({
   await queryInterface.addColumn('platforms', 'authorizationServer', {
     type: Sequelize.STRING,
     allowNull: true,
-    default: null
+    defaultValue: null
   });
 };
 

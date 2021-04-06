@@ -8,7 +8,7 @@ const up = async ({ context: queryInterface }) => {
     {
       type: Sequelize.STRING,
       allowNull: true,
-      default: null
+      defaultValue: null
     }
   )
 }
