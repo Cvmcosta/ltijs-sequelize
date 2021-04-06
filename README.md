@@ -26,6 +26,9 @@ Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps
 
 > *Learning Tools Interoperability® (LTI®) is a trademark of the IMS Global Learning Consortium, Inc. (https://www.imsglobal.org)*
 
+> V2.4.0
+> - Added support for `authorizationServer` Platform field, introduced on version `5.7.0` of Ltijs.
+> - Added support for automatic migrations. This will greatly increase flexibility.
 
 > V2.3.0
 > - Added support for Dynamic Registration Service, introduced on version `5.5.0` of Ltijs.

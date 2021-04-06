@@ -19,6 +19,13 @@ const crypto = require('crypto');
 const Sequelize = require('sequelize');
 
 const cron = require('node-cron');
+
+const {
+  Umzug,
+  SequelizeStorage
+} = require('umzug');
+
+const path = require('path');
 /**
  * @description Collection of methods to manipulate the database.
  */
@@ -265,6 +272,10 @@ class Database {
         accesstokenEndpoint: {
           type: Sequelize.TEXT
         },
+        authorizationServer: {
+          type: Sequelize.STRING,
+          allowNull: true
+        },
         kid: {
           type: Sequelize.TEXT
         },
@@ -440,9 +451,23 @@ class Database {
   async setup() {
     provDatabaseDebug('Using Sequelize Database Plugin - Cvmcosta');
     provDatabaseDebug('Dialect: ' + (0, _classPrivateFieldGet2.default)(this, _dialect));
-    await (0, _classPrivateFieldGet2.default)(this, _sequelize).authenticate(); // Sync models to database, creating tables if they do not exist
+    const sequelize = (0, _classPrivateFieldGet2.default)(this, _sequelize);
+    await sequelize.authenticate(); // Sync models to database, creating tables if they do not exist
 
-    await (0, _classPrivateFieldGet2.default)(this, _sequelize).sync(); // Setting up database cleanup cron jobs
+    await sequelize.sync(); // Run migrations
+
+    provDatabaseDebug('Performing migrations');
+    const umzug = new Umzug({
+      migrations: {
+        glob: path.join(__dirname, 'migrations') + '/*.js'
+      },
+      context: sequelize.getQueryInterface(),
+      storage: new SequelizeStorage({
+        sequelize
+      }),
+      logger: console
+    });
+    await umzug.up(); // Setting up database cleanup cron jobs
 
     await (0, _classPrivateFieldGet2.default)(this, _databaseCleanup).call(this);
     (0, _classPrivateFieldSet2.default)(this, _cronJob, cron.schedule('0 */1 * * *', async () => {
