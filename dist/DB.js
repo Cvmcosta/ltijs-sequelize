@@ -272,11 +272,6 @@ class Database {
         accesstokenEndpoint: {
           type: Sequelize.TEXT
         },
-        authorizationServer: {
-          type: Sequelize.STRING,
-          allowNull: true,
-          defaultValue: null
-        },
         kid: {
           type: Sequelize.TEXT
         },
