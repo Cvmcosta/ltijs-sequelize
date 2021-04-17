@@ -60,7 +60,7 @@ This package allows [Ltijs](https://cvmcosta.github.io/ltijs) to work with the d
 
 | Ltijs-sequelize version | Ltijs version |
 | --------- | --------- |
-| ^2.4.0 | ^5.7.0 |
+| ^2.4.2 | ^5.7.0 |
 | ^2.3.0 | ^5.5.0 |
 | ^2.2.0 | ^5.3.0 |
 
