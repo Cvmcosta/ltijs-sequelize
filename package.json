@@ -1,6 +1,6 @@
 {
   "name": "ltijs-sequelize",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Ltijs Sequelize Database Plugin",
   "main": "index.js",
   "engineStrict": true,
@@ -35,7 +35,7 @@
   "dependencies": {
     "@babel/runtime": "^7.10.5",
     "debug": "^4.1.1",
-    "mariadb": "^2.4.2ncu ",
+    "mariadb": "^2.5.3",
     "mysql2": "^2.1.0",
     "node-cron": "^2.0.3",
     "pg": "^8.3.0",
