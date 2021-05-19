@@ -372,7 +372,7 @@ class Database {
       })
       await umzug.up()
     } else {
-      provDatabaseDebug('Skpping migrations')
+      provDatabaseDebug('Skipping migrations')
     }
 
     // Setting up database cleanup cron jobs
