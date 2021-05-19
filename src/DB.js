@@ -415,6 +415,7 @@ class Database {
     const queryResult = await this.#Models[table].findAll({ where: info })
 
     const result = []
+
     for (let item of queryResult) {
       if (table === 'accesstoken' || table === 'idtoken' || table === 'contexttoken' || table === 'nonce') {
         const createdAt = Date.parse(item.createdAt)
@@ -462,6 +463,7 @@ class Database {
         data: encrypted.data
       }
     }
+
     if (table === 'accesstoken') {
       newDocData = {
         ...index,
@@ -494,6 +496,14 @@ class Database {
         ...index,
         iv: encrypted.iv,
         data: encrypted.data
+      }
+    }
+
+    if (table === 'accesstoken' &&
+      Object.keys(newDocData).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newDocData = {
+        ...newDocData,
+        access_token_hash: crypto.createHash('md5').update(`${newDocData.platformUrl}${newDocData.clientId}${newDocData.scopes}`).digest('hex')
       }
     }
 

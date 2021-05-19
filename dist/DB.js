@@ -471,7 +471,7 @@ class Database {
       });
       await umzug.up();
     } else {
-      provDatabaseDebug('Skpping migrations');
+      provDatabaseDebug('Skipping migrations');
     } // Setting up database cleanup cron jobs
 
 
@@ -515,6 +515,7 @@ class Database {
       where: info
     });
     const result = [];
+    provDatabaseDebug(`Checking the table for get: ${table}`);
 
     for (let item of queryResult) {
       if (table === 'accesstoken' || table === 'idtoken' || table === 'contexttoken' || table === 'nonce') {
@@ -569,6 +570,8 @@ class Database {
       });
     }
 
+    provDatabaseDebug(`Checking the table for insert: ${table}`);
+
     if (table === 'accesstoken') {
       newDocData = _objectSpread(_objectSpread({}, index), {}, {
         access_token_hash: crypto.createHash('md5').update(`${item.platformUrl}${item.clientId}${item.scopes}`).digest('hex')
@@ -603,6 +606,12 @@ class Database {
       });
     }
 
+    if (table === 'accesstoken' && Object.keys(newDocData).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newDocData = _objectSpread(_objectSpread({}, newDocData), {}, {
+        access_token_hash: crypto.createHash('md5').update(`${newDocData.platformUrl}${newDocData.clientId}${newDocData.scopes}`).digest('hex')
+      });
+    }
+
     await (0, _classPrivateFieldGet2.default)(this, _Models)[table].create(newDocData);
     return true;
   }
@@ -634,6 +643,8 @@ class Database {
         newMod = await this.Encrypt(JSON.stringify(result), ENCRYPTIONKEY);
       }
     }
+
+    provDatabaseDebug(`Checking the table for modify: ${table}`);
 
     if (table === 'accesstoken' && Object.keys(newMod).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
       newMod = _objectSpread(_objectSpread({}, newMod), {}, {
