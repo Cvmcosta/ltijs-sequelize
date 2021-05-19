@@ -396,19 +396,13 @@ class Database {
         },
         data: {
           type: Sequelize.TEXT
+        },
+        access_token_hash: {
+          type: Sequelize.STRING
         }
       }, {
         indexes: [{
-          fields: [{
-            attribute: 'platformUrl',
-            length: 50
-          }, {
-            attribute: 'clientId',
-            length: 50
-          }, {
-            attribute: 'scopes',
-            length: 50
-          }],
+          fields: ['access_token_hash'],
           unique: true
         }, {
           fields: ['createdAt']
@@ -575,6 +569,12 @@ class Database {
       });
     }
 
+    if (table === 'accesstoken') {
+      newDocData = _objectSpread(_objectSpread({}, index), {}, {
+        access_token_hash: crypto.createHash('md5').update(`${item.platformUrl}${item.clientId}${item.scopes}`).digest('hex')
+      });
+    }
+
     await (0, _classPrivateFieldGet2.default)(this, _Models)[table].create(newDocData);
     return true;
   }
@@ -633,6 +633,12 @@ class Database {
         result[Object.keys(modification)[0]] = Object.values(modification)[0];
         newMod = await this.Encrypt(JSON.stringify(result), ENCRYPTIONKEY);
       }
+    }
+
+    if (table === 'accesstoken' && Object.keys(newMod).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newMod = _objectSpread(_objectSpread({}, newMod), {}, {
+        access_token_hash: crypto.createHash('md5').update(`${newMod.platformUrl}${newMod.clientId}${newMod.scopes}`).digest('hex')
+      });
     }
 
     await (0, _classPrivateFieldGet2.default)(this, _Models)[table].update(newMod, {

@@ -299,23 +299,19 @@ class Database {
         },
         data: {
           type: Sequelize.TEXT
+        },
+        access_token_hash: {
+          type: Sequelize.STRING
         }
       }, {
-        indexes: [{
-          fields: [{
-            attribute: 'platformUrl',
-            length: 50
-          }, {
-            attribute: 'clientId',
-            length: 50
-          }, {
-            attribute: 'scopes',
-            length: 50
-          }],
-          unique: true
-        }, {
-          fields: ['createdAt']
-        }]
+        indexes: [
+          {
+            fields: ['access_token_hash'],
+            unique: true
+          },
+          {
+            fields: ['createdAt']
+          }]
       }),
       nonce: this.#sequelize.define('nonce', {
         nonce: {
@@ -466,6 +462,12 @@ class Database {
         data: encrypted.data
       }
     }
+    if (table === 'accesstoken') {
+      newDocData = {
+        ...index,
+        access_token_hash: crypto.createHash('md5').update(`${item.platformUrl}${item.clientId}${item.scopes}`).digest('hex')
+      }
+    }
 
     await this.#Models[table].create(newDocData)
     return true
@@ -522,6 +524,13 @@ class Database {
       }
     }
 
+    if (table === 'accesstoken' &&
+      Object.keys(newMod).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newMod = {
+        ...newMod,
+        access_token_hash: crypto.createHash('md5').update(`${newMod.platformUrl}${newMod.clientId}${newMod.scopes}`).digest('hex')
+      }
+    }
     await this.#Models[table].update(newMod, { where: info })
 
     return true
