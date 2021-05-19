@@ -41,6 +41,8 @@ var _dialect = new WeakMap();
 
 var _cronJob = new WeakMap();
 
+var _dbOptions = new WeakMap();
+
 var _ExpireTime = new WeakMap();
 
 var _databaseCleanup = new WeakMap();
@@ -52,8 +54,11 @@ class Database {
    * @param {String} user - Auth user
    * @param {String} pass - Auth password
    * @param {Object} options - Sequelize options
+   * @param {Object} options - LTIJS DB options
    */
-  constructor(database, user, pass, options) {
+  constructor(database, user, pass, options, ltijsOptions = {
+    runMigrations: true
+  }) {
     _sequelize.set(this, {
       writable: true,
       value: void 0
@@ -75,6 +80,11 @@ class Database {
     });
 
     _cronJob.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _dbOptions.set(this, {
       writable: true,
       value: void 0
     });
@@ -138,7 +148,10 @@ class Database {
       }
     });
 
+    provDatabaseDebug('Setup options: ', ltijsOptions);
+    provDatabaseDebug(ltijsOptions);
     (0, _classPrivateFieldSet2.default)(this, _sequelize, new Sequelize(database, user, pass, options));
+    (0, _classPrivateFieldSet2.default)(this, _dbOptions, ltijsOptions);
     (0, _classPrivateFieldSet2.default)(this, _dialect, options.dialect);
     (0, _classPrivateFieldSet2.default)(this, _Models, {
       idtoken: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('idtoken', {
@@ -450,18 +463,23 @@ class Database {
     const sequelize = (0, _classPrivateFieldGet2.default)(this, _sequelize);
     await sequelize.authenticate(); // Run migrations
 
-    provDatabaseDebug('Performing migrations');
-    const umzug = new Umzug({
-      migrations: {
-        glob: path.join(__dirname, 'migrations') + '/*.js'
-      },
-      context: sequelize.getQueryInterface(),
-      storage: new SequelizeStorage({
-        sequelize
-      }),
-      logger: console
-    });
-    await umzug.up(); // Setting up database cleanup cron jobs
+    if ((0, _classPrivateFieldGet2.default)(this, _dbOptions).runMigrations === true) {
+      provDatabaseDebug('Performing migrations');
+      const umzug = new Umzug({
+        migrations: {
+          glob: path.join(__dirname, 'migrations') + '/*.js'
+        },
+        context: sequelize.getQueryInterface(),
+        storage: new SequelizeStorage({
+          sequelize
+        }),
+        logger: console
+      });
+      await umzug.up();
+    } else {
+      provDatabaseDebug('Skpping migrations');
+    } // Setting up database cleanup cron jobs
+
 
     await (0, _classPrivateFieldGet2.default)(this, _databaseCleanup).call(this);
     (0, _classPrivateFieldSet2.default)(this, _cronJob, cron.schedule('0 */1 * * *', async () => {

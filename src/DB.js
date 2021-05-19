@@ -19,6 +19,8 @@ class Database {
 
   #cronJob
 
+  #dbOptions
+
   #ExpireTime = {
     idtoken: 3600 * 24 * 1000,
     contexttoken: 3600 * 24 * 1000,
@@ -52,9 +54,13 @@ class Database {
    * @param {String} user - Auth user
    * @param {String} pass - Auth password
    * @param {Object} options - Sequelize options
+   * @param {Object} options - LTIJS DB options
    */
-  constructor (database, user, pass, options) {
+  constructor (database, user, pass, options, ltijsOptions = { runMigrations: true }) {
+    provDatabaseDebug('Setup options: ', ltijsOptions)
+    provDatabaseDebug(ltijsOptions)
     this.#sequelize = new Sequelize(database, user, pass, options)
+    this.#dbOptions = ltijsOptions
     this.#dialect = options.dialect
     this.#Models = {
       idtoken: this.#sequelize.define('idtoken', {
@@ -360,14 +366,18 @@ class Database {
     const sequelize = this.#sequelize
     await sequelize.authenticate()
     // Run migrations
-    provDatabaseDebug('Performing migrations')
-    const umzug = new Umzug({
-      migrations: { glob: path.join(__dirname, 'migrations') + '/*.js' },
-      context: sequelize.getQueryInterface(),
-      storage: new SequelizeStorage({ sequelize }),
-      logger: console
-    })
-    await umzug.up()
+    if (this.#dbOptions.runMigrations === true) {
+      provDatabaseDebug('Performing migrations')
+      const umzug = new Umzug({
+        migrations: { glob: path.join(__dirname, 'migrations') + '/*.js' },
+        context: sequelize.getQueryInterface(),
+        storage: new SequelizeStorage({ sequelize }),
+        logger: console
+      })
+      await umzug.up()
+    } else {
+      provDatabaseDebug('Skpping migrations')
+    }
 
     // Setting up database cleanup cron jobs
     await this.#databaseCleanup()
