@@ -448,9 +448,7 @@ class Database {
     provDatabaseDebug('Using Sequelize Database Plugin - Cvmcosta');
     provDatabaseDebug('Dialect: ' + (0, _classPrivateFieldGet2.default)(this, _dialect));
     const sequelize = (0, _classPrivateFieldGet2.default)(this, _sequelize);
-    await sequelize.authenticate(); // Sync models to database, creating tables if they do not exist
-
-    await sequelize.sync(); // Run migrations
+    await sequelize.authenticate(); // Run migrations
 
     provDatabaseDebug('Performing migrations');
     const umzug = new Umzug({

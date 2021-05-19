@@ -359,8 +359,6 @@ class Database {
     provDatabaseDebug('Dialect: ' + this.#dialect)
     const sequelize = this.#sequelize
     await sequelize.authenticate()
-    // Sync models to database, creating tables if they do not exist
-    await sequelize.sync()
     // Run migrations
     provDatabaseDebug('Performing migrations')
     const umzug = new Umzug({
