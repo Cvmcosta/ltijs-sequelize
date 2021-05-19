@@ -515,7 +515,6 @@ class Database {
       where: info
     });
     const result = [];
-    provDatabaseDebug(`Checking the table for get: ${table}`);
 
     for (let item of queryResult) {
       if (table === 'accesstoken' || table === 'idtoken' || table === 'contexttoken' || table === 'nonce') {
@@ -569,8 +568,6 @@ class Database {
         data: encrypted.data
       });
     }
-
-    provDatabaseDebug(`Checking the table for insert: ${table}`);
 
     if (table === 'accesstoken') {
       newDocData = _objectSpread(_objectSpread({}, index), {}, {
@@ -643,8 +640,6 @@ class Database {
         newMod = await this.Encrypt(JSON.stringify(result), ENCRYPTIONKEY);
       }
     }
-
-    provDatabaseDebug(`Checking the table for modify: ${table}`);
 
     if (table === 'accesstoken' && Object.keys(newMod).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
       newMod = _objectSpread(_objectSpread({}, newMod), {}, {
