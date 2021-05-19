@@ -62,8 +62,9 @@ const up = async ({
     tableName: 'accesstokens',
     fields: {
       id: {
-        type: Sequelize.STRING,
-        primaryKey: true
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
       },
       platformUrl: {
         type: Sequelize.TEXT
@@ -178,8 +179,9 @@ const up = async ({
     tableName: 'platforms',
     fields: {
       id: {
-        type: Sequelize.STRING,
-        primaryKey: true
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
       },
       platformName: {
         type: Sequelize.TEXT
@@ -230,8 +232,9 @@ const up = async ({
     tableName: 'contexttokens',
     fields: {
       id: {
-        type: Sequelize.STRING,
-        primaryKey: true
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
       },
       contextId: {
         type: Sequelize.TEXT
@@ -298,8 +301,9 @@ const up = async ({
     tableName: 'idtokens',
     fields: {
       id: {
-        type: Sequelize.STRING,
-        primaryKey: true
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
       },
       iss: {
         type: Sequelize.TEXT
