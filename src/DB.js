@@ -108,18 +108,20 @@ class Database {
         user: {
           type: Sequelize.TEXT
         },
-        roles: this.#dialect === 'postgres' ? { type: Sequelize.ARRAY(Sequelize.TEXT) } : {
-          type: Sequelize.TEXT,
-          get() { // eslint-disable-line
-            const roles = this.getDataValue('roles')
-            if (roles) return roles.split(';')
-            return null
-          },
-          set(val) { // eslint-disable-line
-            if (val) this.setDataValue('roles', val.join(';'))
-            else this.setDataValue('roles', null)
-          }
-        },
+        roles: this.#dialect === 'postgres'
+          ? { type: Sequelize.ARRAY(Sequelize.TEXT) }
+          : {
+              type: Sequelize.TEXT,
+              get() { // eslint-disable-line
+                const roles = this.getDataValue('roles')
+                if (roles) return roles.split(';')
+                return null
+              },
+              set(val) { // eslint-disable-line
+                if (val) this.setDataValue('roles', val.join(';'))
+                else this.setDataValue('roles', null)
+              }
+            },
         targetLinkUri: {
           type: Sequelize.TEXT
         },
@@ -388,7 +390,6 @@ class Database {
     if (this.#cronJob) {
       provDatabaseDebug('Stopping and removing cronjob')
       this.#cronJob.stop()
-      this.#cronJob.destroy()
       this.#cronJob = null
     }
     provDatabaseDebug('Closing connection to database')

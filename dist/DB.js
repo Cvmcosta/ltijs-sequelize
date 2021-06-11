@@ -8,7 +8,7 @@ var _classPrivateFieldSet2 = _interopRequireDefault(require("@babel/runtime/help
 
 var _classPrivateFieldGet2 = _interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldGet"));
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
@@ -31,19 +31,19 @@ const path = require('path');
  */
 
 
-var _sequelize = new WeakMap();
+var _sequelize = /*#__PURE__*/new WeakMap();
 
-var _Models = new WeakMap();
+var _Models = /*#__PURE__*/new WeakMap();
 
-var _deploy = new WeakMap();
+var _deploy = /*#__PURE__*/new WeakMap();
 
-var _dialect = new WeakMap();
+var _dialect = /*#__PURE__*/new WeakMap();
 
-var _cronJob = new WeakMap();
+var _cronJob = /*#__PURE__*/new WeakMap();
 
-var _ExpireTime = new WeakMap();
+var _ExpireTime = /*#__PURE__*/new WeakMap();
 
-var _databaseCleanup = new WeakMap();
+var _databaseCleanup = /*#__PURE__*/new WeakMap();
 
 class Database {
   /**
@@ -480,7 +480,6 @@ class Database {
     if ((0, _classPrivateFieldGet2.default)(this, _cronJob)) {
       provDatabaseDebug('Stopping and removing cronjob');
       (0, _classPrivateFieldGet2.default)(this, _cronJob).stop();
-      (0, _classPrivateFieldGet2.default)(this, _cronJob).destroy();
       (0, _classPrivateFieldSet2.default)(this, _cronJob, null);
     }
 
