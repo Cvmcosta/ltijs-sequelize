@@ -101,6 +101,11 @@ const db = new Database('database', 'user', 'password',
     host: 'localhost',
     dialect: 'mysql',
     logging: false 
+  },
+  {
+    // You can set this to false to not run migrations. A good option if you want a seperate script to run migrations only.
+    // This defaults to "true"
+    runMigrations: true,
   })
 
 // Setup provider

@@ -41,6 +41,8 @@ var _dialect = /*#__PURE__*/new WeakMap();
 
 var _cronJob = /*#__PURE__*/new WeakMap();
 
+var _dbOptions = /*#__PURE__*/new WeakMap();
+
 var _ExpireTime = /*#__PURE__*/new WeakMap();
 
 var _databaseCleanup = /*#__PURE__*/new WeakMap();
@@ -52,8 +54,11 @@ class Database {
    * @param {String} user - Auth user
    * @param {String} pass - Auth password
    * @param {Object} options - Sequelize options
+   * @param {Object} options - LTIJS DB options
    */
-  constructor(database, user, pass, options) {
+  constructor(database, user, pass, options, ltijsOptions = {
+    runMigrations: true
+  }) {
     _sequelize.set(this, {
       writable: true,
       value: void 0
@@ -75,6 +80,11 @@ class Database {
     });
 
     _cronJob.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _dbOptions.set(this, {
       writable: true,
       value: void 0
     });
@@ -138,7 +148,10 @@ class Database {
       }
     });
 
+    provDatabaseDebug('Setup options: ', ltijsOptions);
+    provDatabaseDebug(ltijsOptions);
     (0, _classPrivateFieldSet2.default)(this, _sequelize, new Sequelize(database, user, pass, options));
+    (0, _classPrivateFieldSet2.default)(this, _dbOptions, ltijsOptions);
     (0, _classPrivateFieldSet2.default)(this, _dialect, options.dialect);
     (0, _classPrivateFieldSet2.default)(this, _Models, {
       idtoken: (0, _classPrivateFieldGet2.default)(this, _sequelize).define('idtoken', {
@@ -383,19 +396,13 @@ class Database {
         },
         data: {
           type: Sequelize.TEXT
+        },
+        access_token_hash: {
+          type: Sequelize.STRING
         }
       }, {
         indexes: [{
-          fields: [{
-            attribute: 'platformUrl',
-            length: 50
-          }, {
-            attribute: 'clientId',
-            length: 50
-          }, {
-            attribute: 'scopes',
-            length: 50
-          }],
+          fields: ['access_token_hash'],
           unique: true
         }, {
           fields: ['createdAt']
@@ -448,22 +455,25 @@ class Database {
     provDatabaseDebug('Using Sequelize Database Plugin - Cvmcosta');
     provDatabaseDebug('Dialect: ' + (0, _classPrivateFieldGet2.default)(this, _dialect));
     const sequelize = (0, _classPrivateFieldGet2.default)(this, _sequelize);
-    await sequelize.authenticate(); // Sync models to database, creating tables if they do not exist
+    await sequelize.authenticate(); // Run migrations
 
-    await sequelize.sync(); // Run migrations
+    if ((0, _classPrivateFieldGet2.default)(this, _dbOptions).runMigrations === true) {
+      provDatabaseDebug('Performing migrations');
+      const umzug = new Umzug({
+        migrations: {
+          glob: path.join(__dirname, 'migrations') + '/*.js'
+        },
+        context: sequelize.getQueryInterface(),
+        storage: new SequelizeStorage({
+          sequelize
+        }),
+        logger: console
+      });
+      await umzug.up();
+    } else {
+      provDatabaseDebug('Skipping migrations');
+    } // Setting up database cleanup cron jobs
 
-    provDatabaseDebug('Performing migrations');
-    const umzug = new Umzug({
-      migrations: {
-        glob: path.join(__dirname, 'migrations') + '/*.js'
-      },
-      context: sequelize.getQueryInterface(),
-      storage: new SequelizeStorage({
-        sequelize
-      }),
-      logger: console
-    });
-    await umzug.up(); // Setting up database cleanup cron jobs
 
     await (0, _classPrivateFieldGet2.default)(this, _databaseCleanup).call(this);
     (0, _classPrivateFieldSet2.default)(this, _cronJob, cron.schedule('0 */1 * * *', async () => {
@@ -558,6 +568,12 @@ class Database {
       });
     }
 
+    if (table === 'accesstoken') {
+      newDocData = _objectSpread(_objectSpread({}, index), {}, {
+        access_token_hash: crypto.createHash('md5').update(`${item.platformUrl}${item.clientId}${item.scopes}`).digest('hex')
+      });
+    }
+
     await (0, _classPrivateFieldGet2.default)(this, _Models)[table].create(newDocData);
     return true;
   }
@@ -583,6 +599,12 @@ class Database {
       newDocData = _objectSpread(_objectSpread({}, index), {}, {
         iv: encrypted.iv,
         data: encrypted.data
+      });
+    }
+
+    if (table === 'accesstoken' && Object.keys(newDocData).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newDocData = _objectSpread(_objectSpread({}, newDocData), {}, {
+        access_token_hash: crypto.createHash('md5').update(`${newDocData.platformUrl}${newDocData.clientId}${newDocData.scopes}`).digest('hex')
       });
     }
 
@@ -616,6 +638,12 @@ class Database {
         result[Object.keys(modification)[0]] = Object.values(modification)[0];
         newMod = await this.Encrypt(JSON.stringify(result), ENCRYPTIONKEY);
       }
+    }
+
+    if (table === 'accesstoken' && Object.keys(newMod).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newMod = _objectSpread(_objectSpread({}, newMod), {}, {
+        access_token_hash: crypto.createHash('md5').update(`${newMod.platformUrl}${newMod.clientId}${newMod.scopes}`).digest('hex')
+      });
     }
 
     await (0, _classPrivateFieldGet2.default)(this, _Models)[table].update(newMod, {

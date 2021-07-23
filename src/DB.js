@@ -19,6 +19,8 @@ class Database {
 
   #cronJob
 
+  #dbOptions
+
   #ExpireTime = {
     idtoken: 3600 * 24 * 1000,
     contexttoken: 3600 * 24 * 1000,
@@ -52,9 +54,13 @@ class Database {
    * @param {String} user - Auth user
    * @param {String} pass - Auth password
    * @param {Object} options - Sequelize options
+   * @param {Object} options - LTIJS DB options
    */
-  constructor (database, user, pass, options) {
+  constructor (database, user, pass, options, ltijsOptions = { runMigrations: true }) {
+    provDatabaseDebug('Setup options: ', ltijsOptions)
+    provDatabaseDebug(ltijsOptions)
     this.#sequelize = new Sequelize(database, user, pass, options)
+    this.#dbOptions = ltijsOptions
     this.#dialect = options.dialect
     this.#Models = {
       idtoken: this.#sequelize.define('idtoken', {
@@ -295,23 +301,19 @@ class Database {
         },
         data: {
           type: Sequelize.TEXT
+        },
+        access_token_hash: {
+          type: Sequelize.STRING
         }
       }, {
-        indexes: [{
-          fields: [{
-            attribute: 'platformUrl',
-            length: 50
-          }, {
-            attribute: 'clientId',
-            length: 50
-          }, {
-            attribute: 'scopes',
-            length: 50
-          }],
-          unique: true
-        }, {
-          fields: ['createdAt']
-        }]
+        indexes: [
+          {
+            fields: ['access_token_hash'],
+            unique: true
+          },
+          {
+            fields: ['createdAt']
+          }]
       }),
       nonce: this.#sequelize.define('nonce', {
         nonce: {
@@ -361,17 +363,19 @@ class Database {
     provDatabaseDebug('Dialect: ' + this.#dialect)
     const sequelize = this.#sequelize
     await sequelize.authenticate()
-    // Sync models to database, creating tables if they do not exist
-    await sequelize.sync()
     // Run migrations
-    provDatabaseDebug('Performing migrations')
-    const umzug = new Umzug({
-      migrations: { glob: path.join(__dirname, 'migrations') + '/*.js' },
-      context: sequelize.getQueryInterface(),
-      storage: new SequelizeStorage({ sequelize }),
-      logger: console
-    })
-    await umzug.up()
+    if (this.#dbOptions.runMigrations === true) {
+      provDatabaseDebug('Performing migrations')
+      const umzug = new Umzug({
+        migrations: { glob: path.join(__dirname, 'migrations') + '/*.js' },
+        context: sequelize.getQueryInterface(),
+        storage: new SequelizeStorage({ sequelize }),
+        logger: console
+      })
+      await umzug.up()
+    } else {
+      provDatabaseDebug('Skipping migrations')
+    }
 
     // Setting up database cleanup cron jobs
     await this.#databaseCleanup()
@@ -412,6 +416,7 @@ class Database {
     const queryResult = await this.#Models[table].findAll({ where: info })
 
     const result = []
+
     for (let item of queryResult) {
       if (table === 'accesstoken' || table === 'idtoken' || table === 'contexttoken' || table === 'nonce') {
         const createdAt = Date.parse(item.createdAt)
@@ -460,6 +465,13 @@ class Database {
       }
     }
 
+    if (table === 'accesstoken') {
+      newDocData = {
+        ...index,
+        access_token_hash: crypto.createHash('md5').update(`${item.platformUrl}${item.clientId}${item.scopes}`).digest('hex')
+      }
+    }
+
     await this.#Models[table].create(newDocData)
     return true
   }
@@ -485,6 +497,14 @@ class Database {
         ...index,
         iv: encrypted.iv,
         data: encrypted.data
+      }
+    }
+
+    if (table === 'accesstoken' &&
+      Object.keys(newDocData).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newDocData = {
+        ...newDocData,
+        access_token_hash: crypto.createHash('md5').update(`${newDocData.platformUrl}${newDocData.clientId}${newDocData.scopes}`).digest('hex')
       }
     }
 
@@ -515,6 +535,13 @@ class Database {
       }
     }
 
+    if (table === 'accesstoken' &&
+      Object.keys(newMod).find(element => ['platformUrl', 'clientId', 'scopes'].includes(element))) {
+      newMod = {
+        ...newMod,
+        access_token_hash: crypto.createHash('md5').update(`${newMod.platformUrl}${newMod.clientId}${newMod.scopes}`).digest('hex')
+      }
+    }
     await this.#Models[table].update(newMod, { where: info })
 
     return true
