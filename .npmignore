@@ -59,6 +59,8 @@ typings/
 # next.js build output
 .next
 
+# "files": ["dist"] in package.json is the source of truth for what gets published;
+# these are kept only as a defensive backstop.
 src/
-docs/
-test/
+*.test.ts
+*.dbtest.ts
