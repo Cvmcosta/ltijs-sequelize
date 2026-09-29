@@ -1,25 +1,14 @@
 <div align="center">
-	<br>
-	<br>
-	<a href="https://cvmcosta.github.io/ltijs"><img width="360" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/logo-300.svg"></img></a>
-  <a href="https://site.imsglobal.org/certifications/coursekey/ltijs"​ target='_blank'><img width="80" src="https://www.imsglobal.org/sites/default/files/IMSconformancelogoREG.png" alt="IMS Global Certified" border="0"></img></a>
+  <a href="https://github.com/Cvmcosta/ltijs"><img width="300" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/website/assets/logo.svg" alt="ltijs"></a>
 </div>
 
 > Ltijs Sequelize Database Plugin.
 
-[![travisci](https://travis-ci.org/Cvmcosta/ltijs.svg?branch=master)](https://travis-ci.org/Cvmcosta/ltijs)
-[![codecov](https://codecov.io/gh/Cvmcosta/ltijs/branch/master/graph/badge.svg)](https://codecov.io/gh/Cvmcosta/ltijs)
-[![Node Version](https://img.shields.io/node/v/ltijs.svg)](https://www.npmjs.com/package/ltijs)
+[![Node Version](https://img.shields.io/node/v/ltijs-sequelize.svg)](https://www.npmjs.com/package/ltijs-sequelize)
 [![NPM package](https://img.shields.io/npm/v/ltijs-sequelize.svg)](https://www.npmjs.com/package/ltijs-sequelize)
-[![dependencies Status](https://david-dm.org/cvmcosta/ltijs/status.svg)](https://david-dm.org/cvmcosta/ltijs)
-[![devDependencies Status](https://david-dm.org/cvmcosta/ltijs/dev-status.svg)](https://david-dm.org/cvmcosta/ltijs?type=dev)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![APACHE2 License](https://img.shields.io/github/license/cvmcosta/ltijs)](#license)
+[![NPM downloads](https://img.shields.io/npm/dm/ltijs-sequelize)](https://www.npmjs.com/package/ltijs-sequelize)
+[![APACHE2 License](https://img.shields.io/github/license/cvmcosta/ltijs-sequelize)](LICENSE)
 [![Donate](https://img.shields.io/badge/Donate-Buy%20me%20a%20coffe-blue)](https://www.buymeacoffee.com/UL5fBsi)
-
-Please ⭐️ us on [GitHub](https://github.com/Cvmcosta/ltijs), it always helps!
-
-> [Ltijs is LTI® Advantage Complete Certified by IMS](https://site.imsglobal.org/certifications/coursekey/ltijs)
 
 > _Learning Tools Interoperability® (LTI®) is a trademark of the IMS Global Learning Consortium, Inc. (https://www.imsglobal.org)_
 
@@ -88,43 +77,37 @@ Also install whichever Sequelize dialect driver your database needs (`mysql2`, `
 
 ## Usage
 
-Ltijs v7 no longer takes a `plugin` option in `Provider.setup(...)` — a `DatabaseManager` is constructed directly and passed to `new Provider({ databaseManager })`.
+Ltijs v7's default `database` option only ever builds the built-in `MongoDatabaseManager` — pass a fully-constructed `databaseManager` instead and `database` is ignored entirely, the same way you'd swap in any other [backend](https://cvmcosta.me/ltijs/#/guides/swapping-backends).
 
 ### Fresh installs — `SequelizeDatabaseManager`
 
-```javascript
-const { Provider } = require('ltijs')
-const { SequelizeDatabaseManager } = require('ltijs-sequelize')
+```ts
+import { Provider, DefaultLogger, IdTokenValidationMethod } from 'ltijs'
+import { SequelizeDatabaseManager } from 'ltijs-sequelize'
 
-const logger = { debug: console.debug, warn: console.warn, error: console.error }
-
-const databaseManager = new SequelizeDatabaseManager(logger, {
-  database: 'database',
-  username: 'user',
-  password: 'password',
-  options: { host: 'localhost', dialect: 'mysql', logging: false },
+const provider = new Provider({
+  databaseManager: new SequelizeDatabaseManager(new DefaultLogger(), {
+    database: 'database',
+    username: 'user',
+    password: 'password',
+    options: { host: 'localhost', dialect: 'mysql', logging: false },
+  }),
 })
-
-const provider = new Provider({ databaseManager, server: { port: 3000 } })
 
 provider.onResourceLink(async (context, request, response) => {
-  response.html("It's alive!")
+  response.html(`Hello, ${context.idToken.user.name ?? 'learner'}!`)
 })
 
-const setup = async () => {
-  await provider.deploy()
+await provider.listen()
 
-  await provider.platformManager.registerPlatform({
-    url: 'https://platform.url',
-    name: 'Platform Name',
-    clientId: 'TOOLCLIENTID',
-    authenticationEndpoint: 'https://platform.url/auth',
-    accessTokenEndpoint: 'https://platform.url/token',
-    idTokenValidation: { method: 'JWK_SET', key: 'https://platform.url/keyset' },
-  })
-}
-
-setup()
+await provider.platformManager.registerPlatform({
+  url: 'https://platform.example.com',
+  clientId: 'your-client-id',
+  name: 'Example LMS',
+  authenticationEndpoint: 'https://platform.example.com/auth',
+  accessTokenEndpoint: 'https://platform.example.com/token',
+  idTokenValidation: { method: IdTokenValidationMethod.JwkSet, key: 'https://platform.example.com/jwks' },
+})
 ```
 
 `config` accepts either `{ database, username, password, options }` (the same shape `new Sequelize(...)` itself takes — `options.dialect` is required) or a pre-built `{ sequelize: mySequelizeInstance }`. Both `SequelizeDatabaseManager` and `SequelizeLegacyDatabaseManager` expose the underlying connection as `databaseManager.sequelize`, if you need direct access.
@@ -133,19 +116,22 @@ setup()
 
 Swap in `SequelizeLegacyDatabaseManager` instead — it reads and writes the same tables `ltijs-sequelize@^2` created (`idtoken`, `contexttoken`, `platform`, `platformStatus`, `publickey`, `privatekey`, `accesstoken`, `nonce`), running the same migrations it always has to bring an existing database up to date:
 
-```javascript
-const { SequelizeLegacyDatabaseManager } = require('ltijs-sequelize')
+```ts
+import { Provider, DefaultLogger } from 'ltijs'
+import { SequelizeLegacyDatabaseManager } from 'ltijs-sequelize'
 
-const databaseManager = new SequelizeLegacyDatabaseManager(
-  logger,
-  { database: 'database', username: 'user', password: 'password', options: { host: 'localhost', dialect: 'mysql' } },
-  process.env.LTIKEY, // the same value your v2 deployment passed to Provider.setup('LTIKEY', ...)
-)
-
-const provider = new Provider({ databaseManager })
+const provider = new Provider({
+  databaseManager: new SequelizeLegacyDatabaseManager(
+    new DefaultLogger(),
+    { database: 'database', username: 'user', password: 'password', options: { host: 'localhost', dialect: 'mysql' } },
+    process.env.LTIKEY, // the same value your v2 deployment passed to Provider.setup('LTIKEY', ...)
+  ),
+})
 ```
 
-**Almost certainly pass `encryptionKey`.** Ltijs v5/v6's `Provider.setup(key, ...)` refused to start without that first `key` argument, and the same value was always reused internally as the encryption key for `publickey`/`privatekey`/`accesstoken` rows — so every real v2 deployment has that data encrypted, whether or not that was ever a conscious choice. Pass the same value here (it's only ever used to decrypt/encrypt those three tables now, nothing else). The parameter is technically optional only for a deployment that constructed a `Database` instance directly and never provided an encryption key to it; existing platform/token data reads and writes normally either way once you have the right key — nothing needs to be migrated by hand.
+**Almost certainly pass `encryptionKey`.** Ltijs v5/v6's `Provider.setup(key, ...)` refused to start without that first `key` argument, and the same value was always reused internally as the encryption key for `publickey`/`privatekey`/`accesstoken` rows — so every real v2 deployment has that data encrypted, whether or not that was ever a conscious choice. Pass the same value here (it's only ever used to decrypt/encrypt those three tables now, nothing else). The parameter is technically optional only for a deployment that constructed a `Database` instance directly and never provided an encryption key to it.
+
+Existing `platform`, `publickey`/`privatekey`, and `accesstoken` rows read and write normally with the right key — nothing needs to be migrated by hand. `idtoken`/`contexttoken` rows don't carry over: v5 correlated them by platform/user claims and a signed `ltik` cookie, with no single stored id, while Ltijs v7's interface requires one opaque `id` per launch. That's fine in practice — these are 24h-TTL launch-session rows, not configuration, and a v5-issued `ltik` isn't valid against a v7 deployment anyway, so there's never a real reason to read one from before the upgrade. New launches after upgrading write and read back correctly from the start.
 
 > **Note:** Ltijs v7 no longer persists OIDC login `state` through the database at all (it's a signed, stateless token now), so the old `state` table is unused by both managers going forward.
 
@@ -178,15 +164,14 @@ And if you feel like it, you can donate any amount through paypal, it helps a lo
 ## Special thanks
 
 <div align="center">
-	<a href="https://portais.ufma.br/PortalUfma/" target='_blank'><img width="150" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/ufma-logo.png"></img></a>
-  <a href="https://www.unasus.ufma.br/" target='_blank'><img width="350" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/unasus-logo.png"></img></a>
+  <a href="https://portais.ufma.br/PortalUfma/" target="_blank"><img width="150" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/website/assets/ufma-logo.png"></img></a>
+  <a href="https://www.unasus.ufma.br/" target="_blank"><img width="350" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/website/assets/unasus-logo.png"></img></a>
 </div>
 
 > I would like to thank the Federal University of Maranhão and UNA-SUS/UFMA for the support throughout the entire development process.
 
 <div align="center">
-<br>
-	<a href="https://coursekey.com/" target='_blank'><img width="180" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/docs/coursekey-logo.png"></img></a>
+  <a href="https://coursekey.com/" target="_blank"><img width="180" src="https://raw.githubusercontent.com/Cvmcosta/ltijs/master/website/assets/coursekey-logo.png"></img></a>
 </div>
 
 > I would like to thank CourseKey for making the Certification process possible and allowing me to be an IMS Member through them, which will contribute immensely to the future of the project.
@@ -195,4 +180,4 @@ And if you feel like it, you can donate any amount through paypal, it helps a lo
 
 ## License
 
-[![APACHE2 License](https://img.shields.io/github/license/cvmcosta/ltijs)](LICENSE)
+[![APACHE2 License](https://img.shields.io/github/license/cvmcosta/ltijs-sequelize)](LICENSE)
